@@ -15,7 +15,7 @@ class Transaction
 
   def self.create(user_name: , merchant_name: nil, amount: , type: 'debit')
     unless allowed_credit_limit(amount, type) # TODO: add to a hook
-      Readline.readline('Invalid transaction! Allowed credit limit is', user.credit_limit)
+      Readline.readline('rejected! (reason: credit limit)')
       return
     end
     transaction = Transaction.new(
@@ -27,11 +27,20 @@ class Transaction
     @@all << transaction
     update_user
     update_merchant
+    Readline.readline(message)
   end
 
   @@all = []
 
   private
+
+  def message
+    if @type == 'payback'
+      "#{user_name}(dues: #{user.credit_limit - user.current_limit})"
+    else
+      'success!'
+    end
+  end
 
   def get_merchant(type, merchant_name)
     type == 'payback' ? Merchant.simpl_merchant.name : merchant_name
@@ -49,12 +58,12 @@ class Transaction
     return if type == 'payback'
 
     merchant = Merchant.find_by_name(merchant_name)
-    merchant_due_amount = merchant.total_amount + (amount - discount_amount)
-    merchant_discount_amount = merchant.discount_amount + discount
+    merchant_due_amount = merchant.total_amount + (amount - discount(merchant))
+    merchant_discount_amount = merchant.discount_amount + discount(merchant)
     merchant.update(due_amount: merchant_due_amount, discount_amount: merchant_discount_amount) 
   end
 
-  def discount(amount, merchant)
+  def discount(merchant)
     (amount * merchant.discount_percentage.to_f)/100
   end
 

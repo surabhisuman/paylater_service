@@ -25,7 +25,7 @@ class User
   
   class << self
 
-    def create(name, email, credit_limit)
+    def create(name:, email: , credit_limit: )
       unless credit_limit.positive? # TODO: add to a hook
         Readline.readline('Invalid credit limit! Value should be > 0')
         return
@@ -38,13 +38,21 @@ class User
         transactions: []
       )
       @@all << user
-      return user
+      puts name, '(', credit_limit, ')'
     end
 
-    def self.find_by_name(name) # finds by name
+    def find_by_name(name) # finds by name
       @@all.find do |user|
         user.name == name
       end
+    end
+
+    def total_dues
+      @@all.select { |user| (user.credit_limit - user.current_limit).positive? }
+    end
+
+    def credit_limit_reached
+      @@all.select { |user| user.current_limit.zero? }.map(&:name)
     end
   end
 

@@ -35,6 +35,7 @@ class Merchant
         total_amount: 0
       )
       @@all << merchant
+      puts name, '(', discount_percentage, ')'
     end
 
     def find_by_name(name) # finds by name
