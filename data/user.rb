@@ -21,6 +21,22 @@ class User
     params_hash.each do |key, val|
       instance_variable_set("@#{key}".to_sym, val)
     end
+    Readline.readline("#{name}(#{credit_limit})") if params_hash[:credit_limit]
+  end
+
+  def update_limit(transaction)
+    txn_amount = transaction.type == 'payback' ? transaction.amount : -transaction.amount
+    updated_limit = current_limit + txn_amount
+    new_transactions = transactions + [transaction]
+    update(current_limit: updated_limit, transactions: new_transactions)
+  end
+
+  def allowed_credit_limit(txn_amount, txn_type)
+    if txn_type == 'debit'
+      txn_amount.to_i <= current_limit.to_i
+    else
+      txn_amount.to_i <= (credit_limit - current_limit).to_i
+    end
   end
   
   class << self

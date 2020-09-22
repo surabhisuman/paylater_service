@@ -19,13 +19,23 @@ class Merchant
     params_hash.each do |key, val|
       instance_variable_set("@#{key}".to_sym, val)
     end
+    Readline.readline("#{name}(#{discount_percentage})") if params_hash[:discount_percentage]
+  end
+
+  def update_dues(transaction)
+    return if name == 'simpl' || transaction.type == 'payback'
+
+    discount = (transaction.amount * discount_percentage.split('%').first.to_f)/100
+    merchant_due_amount = due_amount + (transaction.amount - discount)
+    merchant_discount_amount = discount_amount + discount
+    update(due_amount: merchant_due_amount, discount_amount: merchant_discount_amount) 
   end
 
   @@all = []
 
   class << self
     def simpl_merchant
-      @@simple_merchant ||= Merchant.new(name: "simpl", discount_percentage: 0)
+      @@simpl_merchant ||= Merchant.create(name: 'simpl', discount_percentage: 0)
     end
 
     def create(name: ,discount_percentage:)
@@ -36,7 +46,8 @@ class Merchant
         discount_amount: 0
       )
       @@all << merchant
-      Readline.readline("#{name}(#{discount_percentage})")
+      Readline.readline("#{name}(#{discount_percentage})") unless name == 'simpl'
+      merchant
     end
 
     def find_by_name(name) # finds by name
