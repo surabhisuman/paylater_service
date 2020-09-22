@@ -13,7 +13,7 @@ class User
   
   @@all = []
 
-  def update(name: nil, email: nil, credit_limit: nil)
+  def update(name: nil, email: nil, credit_limit: nil, current_limit: nil, transactions: nil)
     params_hash = method(__method__).parameters.map.collect do |_, key|
       [key, binding.local_variable_get(key)]
     end.to_h
@@ -33,12 +33,12 @@ class User
       user = User.new(
         name: name,
         email: email,
-        credit_limit: credit_limit,
-        current_limit: credit_limit,
+        credit_limit: credit_limit.to_i,
+        current_limit: credit_limit.to_i,
         transactions: []
       )
       @@all << user
-      puts name, '(', credit_limit, ')'
+      Readline.readline("#{name}(#{credit_limit})")
     end
 
     def find_by_name(name) # finds by name

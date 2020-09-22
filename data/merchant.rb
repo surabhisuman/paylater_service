@@ -11,7 +11,7 @@ class Merchant
     end
   end
 
-  def update(name: nil, email: nil, credit_limit: nil)
+  def update(name: nil, discount_percentage: nil, due_amount: nil, discount_amount: nil)
     params_hash = method(__method__).parameters.map.collect do |_, key|
       [key, binding.local_variable_get(key)]
     end.to_h
@@ -25,17 +25,18 @@ class Merchant
 
   class << self
     def simpl_merchant
-      @@simple_merchant ||= Merchant.create("simpl", 0)
+      @@simple_merchant ||= Merchant.new(name: "simpl", discount_percentage: 0)
     end
 
     def create(name: ,discount_percentage:)
       merchant = Merchant.new(
         name: name, 
         discount_percentage: discount_percentage,
-        total_amount: 0
+        due_amount: 0,
+        discount_amount: 0
       )
       @@all << merchant
-      puts name, '(', discount_percentage, ')'
+      Readline.readline("#{name}(#{discount_percentage})")
     end
 
     def find_by_name(name) # finds by name
