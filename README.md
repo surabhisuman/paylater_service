@@ -1,16 +1,6 @@
-# paylater_service
-User - name, email, credit_limit, current_limit, -> has many transactions
-Merchant - name, discount percentage, due_amount, discount_amount -> has many transactions
-Transaction -> amount, type belongs_to :user, belongs_to :merchant
+# Paylater Service
 
-Simpl as a merchant - for payback transactions
-
-Functions:
-1. User - update[instance method] (for updating any info e.g. credit limit), create total dues, credit_limit_reached, find_by_name [class methods]
-2. merchant - update[instance method], Simpl merchant, create, find[class method]
-3. transaction - 
-before create - check for credit limit, type of merchant, type of txn - debit or payback
-after create - [update user(current due and transactions), update merchant(due amount and discount_amount)]
+A simple Ruby CLI based paylater service
 
 There are various use cases this service is intended to fulfil -
 ● allow merchants to be onboarded with the amount of discounts they offer
@@ -24,6 +14,7 @@ There are various use cases this service is intended to fulfil -
 ○ which users have reached their credit limit
 ○ total dues from all users together
 
+### Sample Input
 new user u1 u1@email.in 1000 # name, email, credit-limit
 new merchant m1 2% # name, discount-percentage
 new txn u1 m1 400 # user, merchant, txn-amount
